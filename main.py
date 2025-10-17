@@ -29,4 +29,7 @@ def chat(messages, history):
 iface = gr.ChatInterface(fn=chat, title="Ragna Chat Interface",
                          description="Chat with the Ollama language model.", type="messages")
 
-iface.launch(share=True)
+if os.getenv("ALLOW_OUTBOUND", "false").lower() == "true":
+    iface.launch(server_port=int(os.getenv("PORT", 8833)), server_name="0.0.0.0")
+else:
+    iface.launch(server_port=int(os.getenv("PORT", 8833)))
