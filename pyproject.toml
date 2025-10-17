@@ -1,0 +1,14 @@
+[project]
+name = "ragna"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "dotenv>=0.9.9",
+    "gradio>=4.44.1",
+    "langchain>=0.3.27",
+    "langchain-community>=0.3.31",
+    "langchain-ollama>=0.3.10",
+    "langchain-openai>=0.3.35",
+]
