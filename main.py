@@ -3,10 +3,10 @@ from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 import os
 from langchain_core.messages import HumanMessage, AIMessage
+import uuid
 
 class App:
     client = None
-    turn_count = 0
 
     def __init__(self):
         # 環境変数がロードされていることを確認
@@ -16,7 +16,13 @@ class App:
             model=os.getenv("LLM_MODEL")
         )
 
-    def chat(self, message, history): # 引数名は `messages` (最新のユーザー入力)と `history` (履歴)
+    def chat(self, message, history, state): # 引数名は `messages` (最新のユーザー入力)と `history` (履歴)
+        if state is None:
+            state = {
+                "session_id": str(uuid.uuid4()),
+                "turn_count": 0
+            }
+
         # Gradioの履歴をLangChainのMessageオブジェクトに変換
         # history は [["user_msg_1", "llm_response_1"], ["user_msg_2", "llm_response_2"], ...] のリスト
         
@@ -34,14 +40,20 @@ class App:
         # LangChainのinvokeに完全なメッセージリストを渡す
         response = self.client.invoke(langchain_messages)
 
-        self.turn_count += 1
+        state["turn_count"] += 1
 
-        return response.content # 返り値は最新のLLMの応答
+        return response.content, state # 返り値は最新のLLMの応答
     
     def run(self):
+        state = gr.State()
         # type="messages" を削除しました。fnが (message, history) の2引数を取る場合、これが標準です。
-        iface = gr.ChatInterface(fn=self.chat, title="Ragna Chat Interface",
-                                 description="Chat with the Ollama language model.")
+        iface = gr.ChatInterface(
+            fn=self.chat,
+            title="Ragna Chat Interface",
+            description="Chat with the Ollama language model.",
+            additional_inputs=[state],
+            clear_btn=gr.Button("🗑️ 新しいチャット")
+        )
 
         # サーバー設定の環境変数処理はそのまま維持
         port = int(os.getenv("PORT", 8833))
