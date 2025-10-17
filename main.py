@@ -46,8 +46,7 @@ class App:
         # サーバー設定の環境変数処理はそのまま維持
         port = int(os.getenv("PORT", 8833))
         if os.getenv("ALLOW_OUTBOUND", "false").lower() == "true":
-            # share=True は外部公開用ですが、server_name="0.0.0.0" と併用します
-            iface.launch(server_port=port, server_name="0.0.0.0", share=True)
+            iface.launch(server_port=port, server_name="0.0.0.0")
         else:
             iface.launch(server_port=port)
 
