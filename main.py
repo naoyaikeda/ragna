@@ -6,6 +6,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 
 class App:
     client = None
+    turn_count = 0
 
     def __init__(self):
         # 環境変数がロードされていることを確認
@@ -32,7 +33,9 @@ class App:
     
         # LangChainのinvokeに完全なメッセージリストを渡す
         response = self.client.invoke(langchain_messages)
-    
+
+        self.turn_count += 1
+
         return response.content # 返り値は最新のLLMの応答
     
     def run(self):
